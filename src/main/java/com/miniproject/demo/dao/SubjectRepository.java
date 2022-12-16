@@ -18,7 +18,6 @@ public interface SubjectRepository extends JpaRepository<Subject, Integer> {
 	List<String> SubjectAllocatedToStandardCheck();
 	
 	@Query("Select DISTINCT u.subjectName,u.standardAllocated from Subject u")
-	//@Query("Select v.standardAllocated from (Select DISTINCT u.subjectName,u.standardAllocated from Subject u) v GROUP BY v.standardAllocated HAVING COUNT(u)>=6")
 	List<String> newSubjectAllocatedToStandardCheck();
 	
 	
