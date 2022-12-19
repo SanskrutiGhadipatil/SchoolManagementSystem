@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -42,7 +43,7 @@ public class ApplicationExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(value = ClassCapacityFullException.class)
 	 public ResponseEntity<Object> exception(ClassCapacityFullException exception) {
-	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		//return exception.getMessage();
 			
 	}
@@ -50,7 +51,7 @@ public class ApplicationExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(value = SubjectNotAllocatedToStandardException.class)
 	 public ResponseEntity<Object> exception(SubjectNotAllocatedToStandardException exception) {
-	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_ACCEPTABLE);
+	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		//return exception.getMessage();
 			
 	}
@@ -75,7 +76,17 @@ public class ApplicationExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(value = ConstraintViolationException.class)
 	 public ResponseEntity<Object> exception(ConstraintViolationException exception) {
-	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		
+			
+	}
+	
+
+	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(value = HttpMessageNotReadableException.class)
+	 public ResponseEntity<Object> exception(HttpMessageNotReadableException exception) {
+	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.NO_CONTENT);
 		
 			
 	}

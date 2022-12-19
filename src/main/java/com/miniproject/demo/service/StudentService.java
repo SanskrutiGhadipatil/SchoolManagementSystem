@@ -9,7 +9,7 @@ import com.miniproject.demo.exception.SubjectNotAllocatedToStandardException;
 
 public interface StudentService {
 	
-	public void enrollNewStudent(Student student) throws ClassCapacityFullException, SubjectNotAllocatedToStandardException;
+	public Student enrollNewStudent(Student student) throws ClassCapacityFullException, SubjectNotAllocatedToStandardException;
 	
 	public List<Student> getStudents();
 	
