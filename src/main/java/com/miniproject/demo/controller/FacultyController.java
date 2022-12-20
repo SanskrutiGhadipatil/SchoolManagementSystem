@@ -28,8 +28,8 @@ public class FacultyController {
 			Faculty f=null;
 			try {
 			f=facultyService.addFaculty(faculty);
-			if(f==null) {
-				throw new NullPointerException();
+			if(null==f) {
+				return new ResponseEntity<>("No Faculty was added",HttpStatus.BAD_REQUEST);
 			}
 			return new ResponseEntity<>("Faculty Details Saved",HttpStatus.CREATED);
 			}catch (Exception e) {
@@ -40,12 +40,17 @@ public class FacultyController {
 		//Handler for Reading From Faculties, returns list of faculties
 		@GetMapping("/faculty")
 		public ResponseEntity<List<Faculty>> getFaculty(){
+			try {
 			List<Faculty> li=facultyService.getFaculty();
 			if(li.size()<=0)
 			{
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 			}
 			return ResponseEntity.of(Optional.of(li));
+			}catch (Exception e) {
+				System.out.println(e.getMessage());
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			}
 			
 		}
 		

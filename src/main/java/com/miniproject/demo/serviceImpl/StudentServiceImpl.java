@@ -90,9 +90,13 @@ public class StudentServiceImpl implements StudentService{
 	//returns the list of students from database
 	@Override
 	public List<Student> getStudents() {
-		
+		try {
 		List<Student> list=repository.findAll();
 		return list;
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
 	}
 
 	//updating the details of student, returns the updated student

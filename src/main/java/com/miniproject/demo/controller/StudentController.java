@@ -33,12 +33,12 @@ public class StudentController {
 		Student s=null;
 		try {
 			s=this.studentService.enrollNewStudent(student);
-			if(s==null) {
-				throw new NullPointerException();
+			if(null==s) {
+				return new ResponseEntity<>("No Student was added",HttpStatus.BAD_REQUEST);
 			}
 			return new ResponseEntity<>("Student Details Saved",HttpStatus.CREATED);
 		}catch (Exception e) {		
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
 		}					
 	}
 	
@@ -47,11 +47,16 @@ public class StudentController {
 	@GetMapping("/students")
 	public  ResponseEntity<List<Student>> getStudents() {
 		
+		try {
 		List<Student> li= studentService.getStudents();
 		if(li.size()<=0) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		return ResponseEntity.of(Optional.of(li));
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
 	}
 	
 	

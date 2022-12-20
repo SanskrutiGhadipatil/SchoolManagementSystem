@@ -26,16 +26,21 @@ public class FacultyServiceImpl implements FacultyService {
 	//Adding the faculty to database, returns the faculty added
 	@Override
 	public Faculty addFaculty(Faculty faculty) {
-		 addressService.validateAddress(faculty);
-	     Faculty f1=repository.save(faculty);
-	     return f1;
+		 addressService.validateAddress(faculty);     
+	     return repository.save(faculty); 
+	     
 	}
 
 	//returns list of faculties
 	@Override
 	public List<Faculty> getFaculty() {
-		List<Faculty> list=repository.findAll();
+		try {
+		List<Faculty> list=repository.findAll();   
 		return list;
+		}catch (Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
 	}
 
 	//updating the faculty details, returns the updated faculty
