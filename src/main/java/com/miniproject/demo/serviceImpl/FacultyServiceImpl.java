@@ -38,8 +38,7 @@ public class FacultyServiceImpl implements FacultyService {
 		List<Faculty> list=repository.findAll();   
 		return list;
 		}catch (Exception e) {
-			System.out.println(e.getMessage());
-			return null;
+			throw e;
 		}
 	}
 
