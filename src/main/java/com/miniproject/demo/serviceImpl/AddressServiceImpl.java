@@ -15,7 +15,7 @@ public class AddressServiceImpl implements AddressService {
 	@Autowired
 	private AddressRepository addressRepository;
 	
-
+    //Method is used check if address is already present in database
 	@Override
 	public void validateAddress(Student student) {
 		try {
@@ -31,6 +31,7 @@ public class AddressServiceImpl implements AddressService {
 		
 	}
 	
+	//Method is used check if address is already present in database
 	public void validateAddress(Faculty faculty) {
 		try {
 			Address a=faculty.getAddress();

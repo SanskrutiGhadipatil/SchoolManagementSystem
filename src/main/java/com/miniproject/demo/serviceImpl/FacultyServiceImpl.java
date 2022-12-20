@@ -23,6 +23,7 @@ public class FacultyServiceImpl implements FacultyService {
 	@Autowired
 	private AddressService addressService;
 	
+	//Adding the faculty to database, returns the faculty added
 	@Override
 	public Faculty addFaculty(Faculty faculty) {
 		 addressService.validateAddress(faculty);
@@ -30,12 +31,14 @@ public class FacultyServiceImpl implements FacultyService {
 	     return f1;
 	}
 
+	//returns list of faculties
 	@Override
 	public List<Faculty> getFaculty() {
 		List<Faculty> list=repository.findAll();
 		return list;
 	}
 
+	//updating the faculty details, returns the updated faculty
 	@Override
 	public void updateFaculty(Faculty faculty, int id) throws FacultyNotFoundException {
 		Optional<Faculty> f=repository.findById(id);
@@ -55,6 +58,7 @@ public class FacultyServiceImpl implements FacultyService {
 		
 	}
 
+	//deleting faculty from database
 	@Override
 	public void deleteFaculty(int id) throws FacultyNotFoundException {
 		Optional<Faculty> faculty=repository.findById(id);
@@ -67,6 +71,7 @@ public class FacultyServiceImpl implements FacultyService {
 		
 	}
 	
+	//checking if faculty already present in database
 	public void validateFaculty(Student student) {
 		try {
 		Faculty faculty=repository.findByNameAndGenderAndContactNumber(student.getFacultyAllocated().getName(),student.getFacultyAllocated().getGender(),student.getFacultyAllocated().getContactNumber());
@@ -76,6 +81,7 @@ public class FacultyServiceImpl implements FacultyService {
 		}
 	}
 	
+	//checking if faculty already present in database
 	public void validateFaculty(Subject sub) {
 		try {
 		Faculty faculty=repository.findByNameAndGenderAndContactNumber(sub.getFacultyAllocated().getName(),sub.getFacultyAllocated().getGender(),sub.getFacultyAllocated().getContactNumber());

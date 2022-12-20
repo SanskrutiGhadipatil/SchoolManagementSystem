@@ -52,12 +52,11 @@ public class StudentServiceImpl implements StudentService{
 	static List<SubjectStandardMap> list=new ArrayList<>();
 	
 
-	
+	//Adding new Student to database, returns the student added
 	@Override
 	public Student enrollNewStudent(Student student) throws ClassCapacityFullException, SubjectNotAllocatedToStandardException {
 	
         
-		
 		if(map.get(student.getStandard())<30){
 		
 			int flag=subjectAllocatedToStandardCheck(student,list);
@@ -88,6 +87,7 @@ public class StudentServiceImpl implements StudentService{
 
 
 
+	//returns the list of students from database
 	@Override
 	public List<Student> getStudents() {
 		
@@ -95,6 +95,7 @@ public class StudentServiceImpl implements StudentService{
 		return list;
 	}
 
+	//updating the details of student, returns the updated student
 	@Override
 	public void updateStudent(Student student, int id) throws StudentNotFoundException {
 	      Optional<Student> s=repository.findById(id);
@@ -116,6 +117,7 @@ public class StudentServiceImpl implements StudentService{
 	     	
 	}
 
+	//deleting student from database
 	@Override
 	public void deleteStudent(int id) throws StudentNotFoundException {
 		Optional<Student> s1=repository.findById(id);
@@ -157,6 +159,7 @@ public class StudentServiceImpl implements StudentService{
 		
 	}
 	
+	//Creating list of subject allocated to standards
 	public void addSubjectStandardToList(Student student) {
 		
 		for(Subject s1:student.getSubject()) {
@@ -173,6 +176,7 @@ public class StudentServiceImpl implements StudentService{
 		}
 	}
 	
+	//Checking no of subjects allocated for given standard
 	public int subjectAllocatedToStandardCheck(Student student,List<SubjectStandardMap> list) {
 		for(Subject s1:student.getSubject()) {
 			int count=0;
@@ -188,6 +192,4 @@ public class StudentServiceImpl implements StudentService{
 		return 0;
 	}
 	
-	
-
 }

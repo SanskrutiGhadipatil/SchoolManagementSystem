@@ -22,7 +22,7 @@ public class FacultyController {
 	@Autowired
 	private FacultyService facultyService;
 	
-	//Adding new Faculties
+	//Handler Adding new Faculties
 		@PostMapping("/addfaculty")     
 		public ResponseEntity<String> addFaculty(@RequestBody Faculty faculty) {
 			Faculty f=null;
@@ -37,7 +37,7 @@ public class FacultyController {
 			}
 		}
 		
-		//Reading From Faculties
+		//Handler for Reading From Faculties, returns list of faculties
 		@GetMapping("/faculty")
 		public ResponseEntity<List<Faculty>> getFaculty(){
 			List<Faculty> li=facultyService.getFaculty();
@@ -49,7 +49,7 @@ public class FacultyController {
 			
 		}
 		
-		//Updating Faculty Details
+		//Handler for Updating Faculty Details
 		@PutMapping("/faculty/{id}")
 		public ResponseEntity<String> updateFaculty(@RequestBody Faculty faculty, @PathVariable("id") int id) {
 			try {
@@ -60,7 +60,7 @@ public class FacultyController {
 			}
 		}
 		
-		//Deleting Faculty Details
+		//Handler for Deleting Faculty Details
 		@DeleteMapping("/faculty/{id}")
 		public ResponseEntity<String> deleteFaculty(@PathVariable("id") int id) {
 			try {

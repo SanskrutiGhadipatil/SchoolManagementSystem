@@ -13,7 +13,8 @@ public class SubjectServiceImpl implements SubjectService{
 	
 	@Autowired
 	private FacultyService facultyService;
-		
+	
+	//Used to validate the faculty within the subject class.
 	public void validateSubject(Student student) {
 		try {
 		for(Subject s:student.getSubject()) {

@@ -43,7 +43,7 @@ public class StudentController {
 	}
 	
 	
-	//Reading from Students
+	//Reading from Students, returns list of students
 	@GetMapping("/students")
 	public  ResponseEntity<List<Student>> getStudents() {
 		
