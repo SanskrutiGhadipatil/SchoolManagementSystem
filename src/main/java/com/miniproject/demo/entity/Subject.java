@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
 
 
 @Entity
@@ -17,12 +18,13 @@ public class Subject {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	private int id; 
+	@NotBlank
 	private String subjectName;	
 	@OneToOne(cascade = {CascadeType.ALL})
 	private Faculty facultyAllocated;
 	private String standardAllocated;
-	@Max(value = 45)
+	@Max(value = 45, message = "Maximum duration must be 45 mins")
 	private int timeDuration;
 	public int getId() {
 		return id;

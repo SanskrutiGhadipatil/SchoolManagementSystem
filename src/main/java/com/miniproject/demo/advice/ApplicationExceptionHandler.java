@@ -77,8 +77,7 @@ public class ApplicationExceptionHandler {
 	@ExceptionHandler(value = ConstraintViolationException.class)
 	 public ResponseEntity<Object> exception(ConstraintViolationException exception) {
 	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
-		
-			
+				
 	}
 	
 

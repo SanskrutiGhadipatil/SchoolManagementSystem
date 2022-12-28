@@ -3,6 +3,7 @@ package com.miniproject.demo.entity;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +13,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "Student")
@@ -23,12 +26,16 @@ public class Student {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int studentId;
 	@NotBlank
+	@Pattern(regexp = "^[a-zA-Z .]*$", message="Name should contain only alphabets and white spaces")
 	private String studentName;
 	private String gender;
 	@OneToOne(cascade = CascadeType.ALL)
 	private Address address;
+	@NotBlank
 	private String standard;
 	private String classTeacherId;
+	@NotBlank
+	@Pattern(regexp = "^[0-9]{10}", message = "Invalid number! PLease enter valid phone number")  
 	private String emergencyContactNumber;
 	@OneToMany(targetEntity = Subject.class,cascade = {CascadeType.ALL})
 	@JoinColumn(name="st_fk",referencedColumnName = "studentId")

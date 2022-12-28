@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.miniproject.demo.entity.Faculty;
 import com.miniproject.demo.service.FacultyService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class FacultyController {
 	
@@ -24,7 +26,7 @@ public class FacultyController {
 	
 	//Handler Adding new Faculties
 		@PostMapping("/addfaculty")     
-		public ResponseEntity<String> addFaculty(@RequestBody Faculty faculty) {
+		public ResponseEntity<String> addFaculty(@RequestBody @Valid Faculty faculty) {
 			Faculty f=null;
 			try {
 			f=facultyService.addFaculty(faculty);
