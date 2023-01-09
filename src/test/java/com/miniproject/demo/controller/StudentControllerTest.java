@@ -259,10 +259,6 @@ class StudentControllerTest {
 		 assertEquals(HttpStatus.NOT_FOUND,controller.updateStudent(s1,s1.getStudentId()).getStatusCode());
 			
 	}
-	
-
-	
-	
-	
+		
 
 }
