@@ -70,7 +70,6 @@ public class ApplicationExceptionHandler {
 	    });
 	    return errors;
 	    
-	   
 	    }	
 	
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -13,7 +13,7 @@ public interface StudentService {
 	
 	public List<Student> getStudents();
 	
-	public void updateStudent(Student student, int id) throws StudentNotFoundException;
+	public Student updateStudent(Student student, int id) throws StudentNotFoundException;
 	
 	public void deleteStudent(int id) throws StudentNotFoundException;
 	

@@ -60,6 +60,17 @@ public class Address {
 		this.pinCode = pinCode;
 	}
 	
+	
+	
+	public Address(int id, String city, String addressLine1, String addressLine2, String country, String pinCode) {
+		super();
+		Id = id;
+		this.city = city;
+		this.addressLine1 = addressLine1;
+		this.addressLine2 = addressLine2;
+		this.country = country;
+		this.pinCode = pinCode;
+	}
 	public Address() {
 		super();
 		// TODO Auto-generated constructor stub

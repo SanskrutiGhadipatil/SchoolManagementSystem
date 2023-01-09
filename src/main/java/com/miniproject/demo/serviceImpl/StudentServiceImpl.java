@@ -35,7 +35,7 @@ public class StudentServiceImpl implements StudentService{
 	private SubjectService subjectService;
 	
 
-	 static Map<String,Integer> map=new HashMap<>();
+    static Map<String,Integer> map=new HashMap<>();
 	static {
 		map.put("I", 0);
 		map.put("II", 0);
@@ -57,12 +57,12 @@ public class StudentServiceImpl implements StudentService{
 	public Student enrollNewStudent(Student student) throws ClassCapacityFullException, SubjectNotAllocatedToStandardException {
 	
         
-		if(map.get(student.getStandard())<30){
+		if(checkStaticMap(student)){
 		
-			int flag=subjectAllocatedToStandardCheck(student,list);
+			//int flag=subjectAllocatedToStandardCheck(student,list);
 	
 
-			if(flag==0) {
+			if(subjectAllocatedToStandardCheck(student,list)==0) {
 		
 				    addressService.validateAddress(student);	
 	    
@@ -85,6 +85,11 @@ public class StudentServiceImpl implements StudentService{
 		
 	}
 
+	public boolean checkStaticMap(Student student) {
+		boolean val=map.get(student.getStandard())<30;
+		return val;
+	}
+	
 
 
 	//returns the list of students from database
@@ -100,7 +105,7 @@ public class StudentServiceImpl implements StudentService{
 
 	//updating the details of student, returns the updated student
 	@Override
-	public void updateStudent(Student student, int id) throws StudentNotFoundException {
+	public Student updateStudent(Student student, int id) throws StudentNotFoundException {
 	      Optional<Student> s=repository.findById(id);
 	      if(s.isPresent()) {
 	    	  Student s1=s.get();
@@ -112,7 +117,7 @@ public class StudentServiceImpl implements StudentService{
 		      s1.setStandard(student.getStandard());
 		      s1.setStudentName(student.getStudentName());
 		      s1.setSubject(student.getSubject());
-		      repository.save(s1);
+		      return repository.save(s1);
 	      }
 	      else {
 	    	  throw new StudentNotFoundException("Student is not present in Database");
@@ -194,5 +199,6 @@ public class StudentServiceImpl implements StudentService{
 		}
 		return 0;
 	}
+	
 	
 }
