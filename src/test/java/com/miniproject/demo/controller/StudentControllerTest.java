@@ -187,7 +187,7 @@ class StudentControllerTest {
 		assertEquals(msg.getBody(),"Student Deleted");
 	}
 	
-//	@Test
+	@Test
 	void testDeleteStudent_notFound() throws Exception {
 		Mockito.doThrow(StudentNotFoundException.class).when(service).deleteStudent(Mockito.anyInt());
 		mockMvc.perform(MockMvcRequestBuilders
