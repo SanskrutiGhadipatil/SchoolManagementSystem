@@ -4,12 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,9 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-
 import com.miniproject.demo.dao.StudentRepository;
 import com.miniproject.demo.entity.Address;
 import com.miniproject.demo.entity.Faculty;
@@ -118,8 +111,8 @@ class StudentServiceTest {
 		
 		StudentServiceImpl spyStud=Mockito.spy(service);
 		Mockito.doReturn(false).when(spyStud).checkStaticMap(Mockito.any());
-		//System.out.println(spyStud.checkStaticMap(s1));
-		assertThrows(ClassCapacityFullException.class, ()->spyStud.enrollNewStudent(s1));
+		ClassCapacityFullException ex= assertThrows(ClassCapacityFullException.class, ()->spyStud.enrollNewStudent(s1));
+		assertEquals("The Standard you are trying to admit student is full", ex.getMessage());
 	}
 	
 	@DisplayName("Save Student_SubjectNotAllocatedToStandard")
@@ -143,7 +136,8 @@ class StudentServiceTest {
 	@Test
 	void updateStudent_StudentNotFoundException() throws StudentNotFoundException {
 		Mockito.when(repository.findById(s1.getStudentId())).thenReturn(Optional.empty());
-		assertThrows(StudentNotFoundException.class,()-> service.updateStudent(s1, s1.getStudentId()));
+		StudentNotFoundException ex=assertThrows(StudentNotFoundException.class,()-> service.updateStudent(s1, s1.getStudentId()));
+		assertEquals("Student is not present in Database",ex.getMessage());
 	}
 	
 	@DisplayName("Delete Student data")
@@ -160,8 +154,10 @@ class StudentServiceTest {
 	@Test
 	void testDeleteStudentData_StudentNotFound() {
 		Mockito.when(repository.findById(s1.getStudentId())).thenReturn(Optional.empty());
-		assertThrows(StudentNotFoundException.class,()-> service.deleteStudent(s1.getStudentId()));
+		StudentNotFoundException ex= assertThrows(StudentNotFoundException.class,()-> service.deleteStudent(s1.getStudentId()));
+		assertEquals("Student Does not exsist",ex.getMessage());
 	}
+	
 	
 
 }

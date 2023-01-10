@@ -13,7 +13,7 @@ public interface FacultyService {
 	
 	public List<Faculty> getFaculty();
 	
-	public void updateFaculty(Faculty faculty, int id) throws FacultyNotFoundException;
+	public Faculty updateFaculty(Faculty faculty, int id) throws FacultyNotFoundException;
 	
 	public void deleteFaculty(int id) throws FacultyNotFoundException;
 	

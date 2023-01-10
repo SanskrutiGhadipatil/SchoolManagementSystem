@@ -44,7 +44,7 @@ public class FacultyServiceImpl implements FacultyService {
 
 	//updating the faculty details, returns the updated faculty
 	@Override
-	public void updateFaculty(Faculty faculty, int id) throws FacultyNotFoundException {
+	public Faculty updateFaculty(Faculty faculty, int id) throws FacultyNotFoundException {
 		Optional<Faculty> f=repository.findById(id);
 		if(f.isPresent()) {
 			Faculty f1=f.get();
@@ -54,7 +54,7 @@ public class FacultyServiceImpl implements FacultyService {
 			f1.setGender(faculty.getGender());
 			f1.setName(faculty.getName());
 			f1.setStandardAllocated(faculty.getStandardAllocated());
-			repository.save(f1);
+			return repository.save(f1);
 		}
 		else {
 			throw new FacultyNotFoundException("Faculty Details not Found");

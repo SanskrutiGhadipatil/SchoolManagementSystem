@@ -1,14 +1,13 @@
 package com.miniproject.demo.controller;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,15 +18,18 @@ import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.StreamingHttpOutputMessage.Body;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.miniproject.demo.advice.ApplicationExceptionHandler;
 import com.miniproject.demo.entity.Address;
 import com.miniproject.demo.entity.Faculty;
 import com.miniproject.demo.entity.Student;
@@ -37,7 +39,7 @@ import com.miniproject.demo.exception.StudentNotFoundException;
 import com.miniproject.demo.exception.SubjectNotAllocatedToStandardException;
 import com.miniproject.demo.serviceImpl.StudentServiceImpl;
 
-@ExtendWith(SpringExtension.class)
+@ExtendWith(SpringExtension.class)            //used to enable spring support
 class StudentControllerTest {
 
 	@InjectMocks
@@ -46,8 +48,11 @@ class StudentControllerTest {
 	@Mock
 	private StudentServiceImpl service;
 	
+	//Spring Boot test tool class that lets you test controllers without needing to start an HTTP server
 	private MockMvc mockMvc;
 	
+	//ObjectMapper provides functionality for reading and writing JSON, 
+	//either to and from basic POJOs (Plain Old Java Objects)
 	private final ObjectMapper objectMapper = new ObjectMapper();
 	ObjectWriter objectWriter=objectMapper.writer();
 		
@@ -59,7 +64,11 @@ class StudentControllerTest {
 	
 	@BeforeEach
 	public void setUp() {
-		this.mockMvc=MockMvcBuilders.standaloneSetup(controller).build();
+		//MockMvcBuilders.standaloneSetup allows to test a single controller at a time,
+		//building the DispatcherServlet and all the necessary infrastructure behind.
+		this.mockMvc=MockMvcBuilders.standaloneSetup(controller)
+				.setControllerAdvice(new ApplicationExceptionHandler())
+				.build();
 		
 		subjectList.add(subject);
 		s1.setStudentName("Sanskruti");
@@ -73,12 +82,38 @@ class StudentControllerTest {
 		s1.setSubject(subjectList);
 	}
 	
+	@DisplayName("To get All Students")
+	@Test
+	void testGetAllStudents() throws Exception {
+		List<Student> students=new ArrayList<>();
+		students.add(s1);
+		
+		Mockito.when(service.getStudents()).thenReturn(students);
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/students")
+				.contentType(MediaType.APPLICATION_JSON))
+		        .andExpect(status().isOk())
+		        .andExpect(jsonPath("$.size()", is(students.size())))  //jsonPath extracts the response content and provides the requested value.
+		        .andExpect(jsonPath("$[0].studentName", is("Sanskruti")));
+	}
+	
+	@DisplayName("To get All Students when list is Empty")
+	@Test
+	void testGetAllStudents_ListEmpty() throws Exception {
+		List<Student> students=new ArrayList<>();
+		Mockito.when(service.getStudents()).thenReturn(students);
+		mockMvc.perform(MockMvcRequestBuilders
+				.get("/students")
+				.contentType(MediaType.APPLICATION_JSON))
+		        .andExpect(status().isNotFound());
+	}
+	
 	@DisplayName("Enroll new Student_Success")
 	@Test
 	void testEnrollNewStudent() throws Exception {
 		Mockito.when(service.enrollNewStudent(Mockito.any(Student.class))).thenReturn(s1);
 		
-		 String content=objectWriter.writeValueAsString(s1);
+		 String content=objectWriter.writeValueAsString(s1);    //converting object to json
 		 
 		 MockHttpServletRequestBuilder mockRequest=MockMvcRequestBuilders
 					.post("/enrollnewstudent")
@@ -86,11 +121,16 @@ class StudentControllerTest {
 					.accept(MediaType.APPLICATION_JSON)
 					.content(content);
 		 
-		 mockMvc.perform(mockRequest)
-	             .andExpect(status().isCreated());
+		 //MockMvc allows to specify the type of request we want to send and the response we expect.
+		 MvcResult mvcResult= mockMvc.perform(mockRequest)
+	             .andExpect(status().isCreated())
+	             .andReturn();
 		 
-		 ResponseEntity<String> msg=controller.enrollNewStudent(s1);
-		 assertEquals(msg.getBody(),"Student Details Saved");		   	
+		 String actualResponseBody = mvcResult.getResponse().getContentAsString();
+		 
+		 String expected="Student Details Saved";
+		 
+		 assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expected);		   	
 	}
 	
 	@DisplayName("Enroll new Student_ student not added")
@@ -106,11 +146,16 @@ class StudentControllerTest {
 					.accept(MediaType.APPLICATION_JSON)
 					.content(content);
 		 
-		mockMvc.perform(mockRequest)
-	             .andExpect(status().isBadRequest());
+		MvcResult mvcResult=mockMvc.perform(mockRequest)
+	             .andExpect(status().isBadRequest())
+	             .andReturn();
 		
-		ResponseEntity<String> msg=controller.enrollNewStudent(s1);
-		assertEquals(msg.getBody(),"No Student was added");
+		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+		 
+		 String expected="No Student was added";
+		 
+		 assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expected);
+			
 		
 	}
 	
@@ -128,7 +173,8 @@ class StudentControllerTest {
 					.content(content);
 		 
 		mockMvc.perform(mockRequest)
-	             .andExpect(status().isBadRequest());		
+	             .andExpect(status().isBadRequest());
+		
 	}
 	
 	@DisplayName("Enroll new Student_StudentNotAllocatedToStandard")
@@ -146,45 +192,24 @@ class StudentControllerTest {
 		 
 		mockMvc.perform(mockRequest)
 	             .andExpect(status().isBadRequest());	
-		
 	}
 	
-	@DisplayName("To get All Students")
-	@Test
-	void testGetAllStudents() throws Exception {
-		List<Student> students=new ArrayList<>();
-		students.add(s1);
-		
-		Mockito.when(service.getStudents()).thenReturn(students);
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/students")
-				.contentType(MediaType.APPLICATION_JSON))
-		        .andExpect(status().isOk())
-		        .andExpect(jsonPath("$.size()", is(students.size())))
-		        .andExpect(jsonPath("$[0].studentName", is("Sanskruti")));
-	}
-	
-	@DisplayName("To get All Students when list is Empty")
-	@Test
-	void testGetAllStudents_ListEmpty() throws Exception {
-		List<Student> students=new ArrayList<>();
-		Mockito.when(service.getStudents()).thenReturn(students);
-		mockMvc.perform(MockMvcRequestBuilders
-				.get("/students")
-				.contentType(MediaType.APPLICATION_JSON))
-		        .andExpect(status().isNotFound());
-	}
 	
 	@Test
 	void testDeleteStudent() throws Exception {
 		Mockito.doNothing().when(service).deleteStudent(s1.getStudentId());
-		mockMvc.perform(MockMvcRequestBuilders
+		MvcResult mvcResult=mockMvc.perform(MockMvcRequestBuilders
 				.delete("/student/{id}",s1.getStudentId())
 				.contentType(MediaType.APPLICATION_JSON))
-		        .andExpect(status().isOk());
+		        .andExpect(status().isOk())
+		        .andReturn();
 		
-		ResponseEntity<String> msg=controller.deleteStudent(s1.getStudentId());
-		assertEquals(msg.getBody(),"Student Deleted");
+         String actualResponseBody = mvcResult.getResponse().getContentAsString();
+		 
+		 String expected="Student Deleted";
+		 
+		 assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expected);	
+		
 	}
 	
 	@Test
@@ -194,6 +219,7 @@ class StudentControllerTest {
 				.delete("/student/{id}",s1.getStudentId())
 				.contentType(MediaType.APPLICATION_JSON))
 		        .andExpect(status().isNotFound());
+		
 	}
 	
 	@Test
@@ -255,9 +281,91 @@ class StudentControllerTest {
 			
 			mockMvc.perform(mockRequest)
 			        .andExpect(status().isNotFound());
+			        
 		 
 		 assertEquals(HttpStatus.NOT_FOUND,controller.updateStudent(s1,s1.getStudentId()).getStatusCode());
 			
+	}
+	
+	@DisplayName("Enroll new Student_val Name should not be null")
+	@Test
+	void testEnrollNewStudent_val() throws Exception {
+		s1.setStudentName("");
+		Mockito.when(service.enrollNewStudent(Mockito.any(Student.class))).thenReturn(s1);
+		
+		 String content=objectWriter.writeValueAsString(s1);
+		 
+		 MockHttpServletRequestBuilder mockRequest=MockMvcRequestBuilders
+					.post("/enrollnewstudent")
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.content(content);
+		 
+		 MvcResult mvcResult=mockMvc.perform(mockRequest)
+	             .andExpect(status().isBadRequest())
+		         .andReturn();
+			
+		String actualResponseBody = mvcResult.getResponse().getContentAsString();
+			 
+	    String expected="{\"studentName\":\"must not be blank\"}";
+			 
+	    assertThat(actualResponseBody).isEqualToIgnoringWhitespace(expected);
+	}
+	
+	@DisplayName("Enroll new Student_val Invalid Number")
+	@Test
+	void testEnrollNewStudent_val_number() throws Exception {
+		s1.setEmergencyContactNumber("45365");
+		Mockito.when(service.enrollNewStudent(Mockito.any(Student.class))).thenReturn(s1);
+		
+		 String content=objectWriter.writeValueAsString(s1);
+		 
+		 MockHttpServletRequestBuilder mockRequest=MockMvcRequestBuilders
+					.post("/enrollnewstudent")
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.content(content);
+		 
+		 mockMvc.perform(mockRequest)
+	             .andExpect(status().isBadRequest());	
+	}
+	
+	@DisplayName("Enroll new Student_val Invalid Name")
+	@Test
+	void testEnrollNewStudent_val_name() throws Exception {
+		s1.setStudentName("Sans@123");
+		Mockito.when(service.enrollNewStudent(Mockito.any(Student.class))).thenReturn(s1);
+		
+		 String content=objectWriter.writeValueAsString(s1);
+		 
+		 MockHttpServletRequestBuilder mockRequest=MockMvcRequestBuilders
+					.post("/enrollnewstudent")
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.content(content);
+		 
+		 mockMvc.perform(mockRequest)
+	             .andExpect(status().isBadRequest());
+	     
+		 
+	}
+	
+	@DisplayName("Enroll new Student_val Invalid Name")
+	@Test
+	void testEnrollNewStudent_val_standard() throws Exception {
+		s1.setStandard(null);		
+		Mockito.when(service.enrollNewStudent(Mockito.any(Student.class))).thenReturn(s1);
+		
+		 String content=objectWriter.writeValueAsString(s1);
+		 
+		 MockHttpServletRequestBuilder mockRequest=MockMvcRequestBuilders
+					.post("/enrollnewstudent")
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON)
+					.content(content);
+		 
+		 mockMvc.perform(mockRequest)
+	             .andExpect(status().isBadRequest());             
 	}
 		
 
