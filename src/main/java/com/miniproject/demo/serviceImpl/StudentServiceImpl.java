@@ -58,9 +58,7 @@ public class StudentServiceImpl implements StudentService{
 	
         
 		if(checkStaticMap(student)){
-		
-			//int flag=subjectAllocatedToStandardCheck(student,list);
-	
+			
 
 			if(subjectAllocatedToStandardCheck(student,list)==0) {
 		

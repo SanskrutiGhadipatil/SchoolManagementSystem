@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.miniproject.demo.entity.Student;
+import com.miniproject.demo.exception.ClassCapacityFullException;
 import com.miniproject.demo.exception.StudentNotFoundException;
+import com.miniproject.demo.exception.SubjectNotAllocatedToStandardException;
 import com.miniproject.demo.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -28,18 +30,14 @@ public class StudentController {
 	
 	//Adding new Students
 	@PostMapping("/enrollnewstudent")
-	public ResponseEntity<String> enrollNewStudent(@RequestBody @Valid Student student) {
+	public String enrollNewStudent(@RequestBody @Valid Student student) throws ClassCapacityFullException, SubjectNotAllocatedToStandardException {
 
 		Student s=null;
-		try {
 			s=this.studentService.enrollNewStudent(student);
 			if(null==s) {
-				return new ResponseEntity<>("No Student was added",HttpStatus.BAD_REQUEST);
+				return "No Student was added";
 			}
-			return new ResponseEntity<>("Student Details Saved",HttpStatus.CREATED);
-		}catch (Exception e) {		
-			return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-		}					
+			return "Student Details Saved";					
 	}
 	
 	

@@ -107,9 +107,10 @@ class StudentServiceTest {
 	
 	@DisplayName("Save Student_capacityFull")
 	@Test
-	void testEnrollNewStudent_capacityFull() {
+	void testEnrollNewStudent_capacityFull() throws Exception {
 		
 		StudentServiceImpl spyStud=Mockito.spy(service);
+		//StudentServiceImpl spyStud=Mockito.mock(StudentServiceImpl.class);
 		Mockito.doReturn(false).when(spyStud).checkStaticMap(Mockito.any());
 		ClassCapacityFullException ex= assertThrows(ClassCapacityFullException.class, ()->spyStud.enrollNewStudent(s1));
 		assertEquals("The Standard you are trying to admit student is full", ex.getMessage());
