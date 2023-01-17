@@ -44,10 +44,13 @@ public class ApplicationExceptionHandler {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(value = ClassCapacityFullException.class)
 	 public ResponseEntity<Object> exception(ClassCapacityFullException exception) {
+		//System.out.println(exception.getMessage());
 	    return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
 		//return exception.getMessage();
 			
 	}
+	
+
 	
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(value = SubjectNotAllocatedToStandardException.class)

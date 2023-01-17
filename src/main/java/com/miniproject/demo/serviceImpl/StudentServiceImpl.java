@@ -84,7 +84,7 @@ public class StudentServiceImpl implements StudentService{
 	}
 
 	public boolean checkStaticMap(Student student) {
-		boolean val=map.get(student.getStandard())<30;
+		boolean val=map.get(student.getStandard())<3;
 		return val;
 	}
 	
